@@ -27,7 +27,9 @@ def summarize_file(path: Path) -> str:
 
     failed_cases = []
     for case in root.iter("testcase"):
-        problem = case.find("failure") or case.find("error")
+        problem = case.find("failure")
+        if problem is None:
+            problem = case.find("error")
         if problem is not None:
             name = f"{case.attrib.get('classname', '')}.{case.attrib.get('name', '')}".strip(".")
             message = problem.attrib.get("message", "").replace("\n", " ")

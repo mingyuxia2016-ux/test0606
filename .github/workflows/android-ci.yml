@@ -1,0 +1,76 @@
+name: Android APK CI
+
+on:
+  push:
+    paths:
+      - "android-ai-cicd-demo/**"
+      - ".github/workflows/android-ci.yml"
+  pull_request:
+    paths:
+      - "android-ai-cicd-demo/**"
+      - ".github/workflows/android-ci.yml"
+
+jobs:
+  android-build-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: android-ai-cicd-demo
+
+    env:
+      DEEPSEEK_BASE_URL: https://api.deepseek.com
+      DEEPSEEK_MODEL: deepseek-chat
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Install Python dependencies for AI scripts
+        run: python -m pip install httpx==0.28.1
+
+      - name: Generate Android unit tests with DeepSeek
+        run: python scripts/generate_ai_android_tests.py
+
+      - name: Run Android unit tests
+        run: gradle :app:testDebugUnitTest
+
+      - name: Build debug APK
+        run: gradle :app:assembleDebug
+
+      - name: Publish Android test report summary
+        if: always()
+        run: python scripts/android_junit_summary.py >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish DeepSeek generated Android tests
+        if: always()
+        run: python scripts/generated_android_tests_summary.py >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Android artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-ai-cicd-artifacts
+          path: |
+            android-ai-cicd-demo/app/build/outputs/apk/debug/*.apk
+            android-ai-cicd-demo/app/build/reports/tests/testDebugUnitTest/
+            android-ai-cicd-demo/app/build/test-results/testDebugUnitTest/
+            android-ai-cicd-demo/app/src/test/java/com/example/aicicd/GeneratedAiTest.java
