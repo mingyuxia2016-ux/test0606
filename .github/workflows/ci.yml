@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      PYTHONPATH: ${{ github.workspace }}
       DEEPSEEK_BASE_URL: https://api.deepseek.com
       DEEPSEEK_MODEL: deepseek-chat
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
@@ -29,10 +30,9 @@ jobs:
 
       - name: Run maintained API tests
         id: base_tests
-        continue-on-error: true
         run: |
           mkdir -p reports
-          pytest tests --junitxml=reports/junit-base.xml
+          python -m pytest tests --junitxml=reports/junit-base.xml
 
       - name: Export OpenAPI spec
         run: python scripts/export_openapi.py
@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir -p reports
           if [ -f generated_tests/test_ai_generated_api.py ]; then
-            pytest generated_tests --junitxml=reports/junit-ai.xml
+            python -m pytest generated_tests --junitxml=reports/junit-ai.xml
           else
             echo "No generated tests found. Skipping AI-generated test execution."
           fi
@@ -69,7 +69,3 @@ jobs:
           path: |
             reports/
             generated_tests/
-
-      - name: Fail workflow when tests fail
-        if: steps.base_tests.outcome == 'failure'
-        run: exit 1
