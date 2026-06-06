@@ -30,6 +30,7 @@ jobs:
 
       - name: Run maintained API tests
         id: base_tests
+        continue-on-error: true
         run: |
           mkdir -p reports
           python -m pytest tests --junitxml=reports/junit-base.xml
@@ -59,7 +60,7 @@ jobs:
         if: steps.ai_tests.outcome == 'failure'
         run: |
           echo "DeepSeek-generated tests failed. See reports/junit-ai.xml in api-test-artifacts."
-          echo "This demo treats generated AI tests as advisory so unstable generated code does not block CI."
+          echo "The API quality gate now requires DeepSeek-generated tests to pass."
 
       - name: Publish test report summary
         if: always()
@@ -77,3 +78,18 @@ jobs:
           path: |
             reports/
             generated_tests/
+
+      - name: Enforce API quality gate
+        if: always()
+        run: |
+          echo "Maintained API tests outcome: ${{ steps.base_tests.outcome }}"
+          echo "DeepSeek-generated API tests outcome: ${{ steps.ai_tests.outcome }}"
+          if [ "${{ steps.base_tests.outcome }}" = "failure" ]; then
+            echo "API quality gate failed: maintained API tests failed."
+            exit 1
+          fi
+          if [ "${{ steps.ai_tests.outcome }}" = "failure" ]; then
+            echo "API quality gate failed: DeepSeek-generated API tests failed."
+            exit 1
+          fi
+          echo "API quality gate passed."

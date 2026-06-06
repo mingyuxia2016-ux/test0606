@@ -134,6 +134,12 @@ https://github.com/mingyuxia2016-ux/test0606/actions
 3. 查看页面里的 `Summary`。
 4. Summary 会显示测试统计、失败用例和 DeepSeek 生成的测试代码。
 
+FastAPI `CI` 现在包含接口测试门禁：
+
+- 人工维护的接口测试失败，CI 失败。
+- DeepSeek 生成的接口测试失败，CI 失败。
+- 即使测试失败，报告和 AI 生成用例仍会先写入 Summary 和 artifact，方便排查。
+
 下载 APK：
 
 1. 打开 `Android APK CI` 的运行详情。
