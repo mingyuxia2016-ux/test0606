@@ -61,6 +61,10 @@ jobs:
           echo "DeepSeek-generated tests failed. See reports/junit-ai.xml in api-test-artifacts."
           echo "This demo treats generated AI tests as advisory so unstable generated code does not block CI."
 
+      - name: Publish test report summary
+        if: always()
+        run: python scripts/junit_summary.py >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
