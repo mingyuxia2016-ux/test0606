@@ -27,16 +27,24 @@ Push code to build APK, run tests, and show reports in GitHub Actions.
 
 每次修改 `android-ai-cicd-demo/**` 并 push 后，会触发 `Android APK CI`：
 
+`android-build-test` job：
+
 1. 拉取代码。
 2. 安装 JDK、Android SDK、Gradle。
 3. 调用 DeepSeek 根据 Java 源码生成 JUnit 测试。
 4. 运行单元测试：`gradle :app:testDebugUnitTest`。
 5. 构建 Debug APK：`gradle :app:assembleDebug`。
-6. 启动 Android 模拟器。
-7. 运行 UI 自动化测试：`gradle :app:connectedDebugAndroidTest`。
-8. 在 GitHub Actions Summary 显示中文测试报告。
-9. 在 Summary 显示 DeepSeek 生成的测试代码。
-10. 上传 APK、测试报告和 AI 生成测试文件。
+6. 在 GitHub Actions Summary 显示中文测试报告和 DeepSeek 生成的测试代码。
+7. 上传 APK、单元测试报告和 AI 生成测试文件。
+
+`android-ui-test` job：
+
+1. 启动 GitHub 云端 Android 模拟器。
+2. 运行 UI 自动化测试：`gradle :app:connectedDebugAndroidTest`。
+3. 在 Summary 显示 UI 测试报告。
+4. 上传 UI 测试报告。
+
+UI job 是辅助验证，模拟器启动失败不会阻塞 APK 构建。
 
 ## GitHub Secret
 
@@ -102,5 +110,5 @@ python scripts/generate_ai_android_tests.py
 ## 注意事项
 
 - UI 自动化测试会启动 GitHub 云端 Android 模拟器，耗时比单元测试更久。
-- 如果日志出现 `adb: device offline`，通常是模拟器启动不稳定，可以重新运行 workflow。
+- 如果日志出现 `adb: device offline`，或长时间重复 `getprop sys.boot_completed`，通常是模拟器启动不稳定，可以重新运行 workflow。
 - 当前项目是学习 Demo，重点是 CI/CD 链路，不是完整生产级 Android 应用。

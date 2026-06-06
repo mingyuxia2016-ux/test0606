@@ -116,6 +116,11 @@ Android workflow：
 Android APK CI
 ```
 
+其中 Android workflow 分成两个 job：
+
+- `android-build-test`：必须通过，负责 DeepSeek 生成单元测试、运行单元测试、构建 APK、上传 APK。
+- `android-ui-test`：UI 自动化测试，启动 GitHub 云端 Android 模拟器运行 Espresso；该 job 是辅助验证，模拟器启动失败不会阻塞 APK 构建。
+
 查看地址：
 
 ```text
@@ -156,5 +161,5 @@ DEEPSEEK_MODEL=deepseek-chat
 ## 说明
 
 - AI 生成测试用于辅助发现问题，生成内容会展示在 Actions Summary。
-- Android UI 自动化测试需要启动 GitHub 云端模拟器，速度较慢，也可能偶发 emulator offline。这类问题属于 CI 运行环境波动，不一定代表 App 或测试代码有问题。
+- Android UI 自动化测试需要启动 GitHub 云端模拟器，速度较慢，也可能偶发 `adb: device offline` 或长时间等待 `sys.boot_completed`。这类问题属于 CI 模拟器环境波动，不一定代表 App 或测试代码有问题。
 - 当前 Android App 是学习 Demo，界面很简单，重点是 CI/CD、APK 构建、AI 生成测试和测试报告链路。
