@@ -20,6 +20,7 @@ Use client = TestClient(app).
 Tests must be deterministic and must not require a live server or network.
 Include happy-path, validation-error, and boundary-style cases when the OpenAPI schema supports them.
 Do not test undocumented endpoints.
+Add short Chinese comments above each test to explain the test purpose.
 """
 
 
