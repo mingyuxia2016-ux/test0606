@@ -38,6 +38,14 @@ class TextSummaryResponse(BaseModel):
     original_length: int
 
 
+class ReverseTextRequest(BaseModel):
+    text: str = Field(..., min_length=1, description="Text to reverse.")
+
+
+class ReverseTextResponse(BaseModel):
+    reversed_text: str
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -66,3 +74,8 @@ def summarize_text(payload: TextSummaryRequest) -> TextSummaryResponse:
         summary = summary[: payload.max_length].rstrip() + "..."
 
     return TextSummaryResponse(summary=summary, original_length=len(payload.text))
+
+
+@app.post("/api/reverse", response_model=ReverseTextResponse)
+def reverse_text(payload: ReverseTextRequest) -> ReverseTextResponse:
+    return ReverseTextResponse(reversed_text=payload.text[::-1])

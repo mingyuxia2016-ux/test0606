@@ -88,3 +88,16 @@ def test_summarize_rejects_empty_text():
     )
 
     assert response.status_code == 422
+
+
+def test_reverse_returns_reversed_text():
+    response = client.post("/api/reverse", json={"text": "cicd"})
+
+    assert response.status_code == 200
+    assert response.json() == {"reversed_text": "dcic"}
+
+
+def test_reverse_rejects_empty_text():
+    response = client.post("/api/reverse", json={"text": ""})
+
+    assert response.status_code == 422
