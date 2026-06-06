@@ -35,24 +35,27 @@ def call_deepseek(report_text: str) -> str:
     base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
     model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
 
-    response = httpx.post(
-        f"{base_url}/chat/completions",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": model,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": report_text},
-            ],
-            "temperature": 0.2,
-        },
-        timeout=60,
-    )
-    response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+    try:
+        response = httpx.post(
+            f"{base_url}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": report_text},
+                ],
+                "temperature": 0.2,
+            },
+            timeout=60,
+        )
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
+    except (httpx.HTTPError, KeyError, IndexError) as exc:
+        return f"DeepSeek failure summary could not be generated: {exc}"
 
 
 def main() -> None:

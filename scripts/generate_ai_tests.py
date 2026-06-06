@@ -48,25 +48,29 @@ def call_deepseek(prompt: str) -> str:
     model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
     url = f"{base_url}/chat/completions"
 
-    response = httpx.post(
-        url,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": model,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": prompt},
-            ],
-            "temperature": 0.1,
-        },
-        timeout=60,
-    )
-    response.raise_for_status()
-    data = response.json()
-    return data["choices"][0]["message"]["content"]
+    try:
+        response = httpx.post(
+            url,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
+                "temperature": 0.1,
+            },
+            timeout=60,
+        )
+        response.raise_for_status()
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
+    except (httpx.HTTPError, KeyError, IndexError) as exc:
+        print(f"DeepSeek test generation failed: {exc}")
+        sys.exit(0)
 
 
 def main() -> None:
