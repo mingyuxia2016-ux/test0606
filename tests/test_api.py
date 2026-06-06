@@ -101,3 +101,29 @@ def test_reverse_rejects_empty_text():
     response = client.post("/api/reverse", json={"text": ""})
 
     assert response.status_code == 422
+
+
+def test_palindrome_accepts_phrase_ignoring_case_and_spaces():
+    response = client.post("/api/palindrome", json={"text": "Never odd or even"})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "is_palindrome": True,
+        "normalized_text": "neveroddoreven",
+    }
+
+
+def test_palindrome_returns_false_for_non_palindrome():
+    response = client.post("/api/palindrome", json={"text": "continuous delivery"})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "is_palindrome": False,
+        "normalized_text": "continuousdelivery",
+    }
+
+
+def test_palindrome_rejects_empty_text():
+    response = client.post("/api/palindrome", json={"text": ""})
+
+    assert response.status_code == 422

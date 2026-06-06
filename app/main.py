@@ -46,6 +46,15 @@ class ReverseTextResponse(BaseModel):
     reversed_text: str
 
 
+class PalindromeRequest(BaseModel):
+    text: str = Field(..., min_length=1, description="Text to check.")
+
+
+class PalindromeResponse(BaseModel):
+    is_palindrome: bool
+    normalized_text: str
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -79,3 +88,12 @@ def summarize_text(payload: TextSummaryRequest) -> TextSummaryResponse:
 @app.post("/api/reverse", response_model=ReverseTextResponse)
 def reverse_text(payload: ReverseTextRequest) -> ReverseTextResponse:
     return ReverseTextResponse(reversed_text=payload.text[::-1])
+
+
+@app.post("/api/palindrome", response_model=PalindromeResponse)
+def check_palindrome(payload: PalindromeRequest) -> PalindromeResponse:
+    normalized_text = "".join(payload.text.lower().split())
+    return PalindromeResponse(
+        is_palindrome=normalized_text == normalized_text[::-1],
+        normalized_text=normalized_text,
+    )
