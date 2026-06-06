@@ -1,0 +1,4 @@
+<resources>
+    <item name="title_text" type="id" />
+    <item name="subtitle_text" type="id" />
+</resources>

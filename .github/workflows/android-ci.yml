@@ -56,6 +56,16 @@ jobs:
       - name: Build debug APK
         run: gradle :app:assembleDebug
 
+      - name: Run Android UI tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          working-directory: android-ai-cicd-demo
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          script: gradle :app:connectedDebugAndroidTest
+
       - name: Publish Android test report summary
         if: always()
         run: python scripts/android_junit_summary.py >> "$GITHUB_STEP_SUMMARY"
@@ -73,4 +83,6 @@ jobs:
             android-ai-cicd-demo/app/build/outputs/apk/debug/*.apk
             android-ai-cicd-demo/app/build/reports/tests/testDebugUnitTest/
             android-ai-cicd-demo/app/build/test-results/testDebugUnitTest/
+            android-ai-cicd-demo/app/build/reports/androidTests/connected/debug/
+            android-ai-cicd-demo/app/build/outputs/androidTest-results/connected/debug/
             android-ai-cicd-demo/app/src/test/java/com/example/aicicd/GeneratedAiTest.java

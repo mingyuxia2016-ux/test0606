@@ -11,9 +11,10 @@
 3. 调用 DeepSeek 根据 Android Java 源码生成 JUnit 测试。
 4. 执行 `gradle :app:testDebugUnitTest`。
 5. 执行 `gradle :app:assembleDebug` 构建 APK。
-6. 在 GitHub Actions Summary 显示中文测试报告。
-7. 在 Summary 显示 DeepSeek 生成的测试用例代码。
-8. 上传 APK、测试报告、AI 生成测试文件。
+6. 启动 Android 模拟器并执行 `gradle :app:connectedDebugAndroidTest` UI 自动化测试。
+7. 在 GitHub Actions Summary 显示中文测试报告。
+8. 在 Summary 显示 DeepSeek 生成的测试用例代码。
+9. 上传 APK、单元测试报告、UI 测试报告、AI 生成测试文件。
 
 ## GitHub Secret
 
@@ -46,6 +47,7 @@ app/build/outputs/apk/debug/app-debug.apk
 ```bash
 gradle :app:testDebugUnitTest
 gradle :app:assembleDebug
+gradle :app:connectedDebugAndroidTest
 ```
 
 本地生成 AI 测试：
