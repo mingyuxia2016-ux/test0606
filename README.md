@@ -101,6 +101,8 @@ DEEPSEEK_API_KEY
 6. 上传测试报告和生成用例。
 7. 测试失败时调用 DeepSeek 输出失败总结。
 
+每次向 `main` 分支提交代码，GitHub Actions 都会自动触发这条流水线。
+
 ## 接口示例
 
 ```bash
